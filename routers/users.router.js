@@ -18,18 +18,17 @@ router.get('/', async (req, res) => {
 
 })
 // findone user
-router.get('/:id', (req, res) => {
-  const id = req.params;
-  const user = usersServices.findoneUser(id);
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  const user = await usersServices.findoneUser(id);
   res.json(user)
-
-
 })
 // create user
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const body = req.body;
-    const newUser = usersServices.createUser(body);
+    const newUser = await usersServices.createUser(body);
+
     res.status(201).json(newUser);
   } catch (error) {
     res.status(404).json({
@@ -40,12 +39,11 @@ router.post('/', (req, res) => {
 
 })
 // update user
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
     const body = req.body;
-    console.log('body', body, "id", id);
-    const user = usersServices.updateUser(id, body)
+    const user = await usersServices.updateUser(id, body)
     res.json(user)
   } catch (error) {
     next(error);
@@ -54,10 +52,10 @@ router.patch('/:id', (req, res, next) => {
 
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const user = usersServices.deleteUser(id)
+    const user = await usersServices.deleteUser(id)
     res.json(user)
   } catch (error) {
     res.status(404).json({

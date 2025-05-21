@@ -1,71 +1,62 @@
 const boom = require('@hapi/boom');
-
+const pool = require('../libs/postgresPool.js');
 
 class ItemsServices {
 
   constructor() {
     this.items = [];
-    this.generate();
+    this.pool = pool;
+    this.pool.on('error', (err) => {
+      console.error(err);
+    });
   }
-
-  generate() {
-    this.items.push({
-      id: 1,
-      name: 'Nevera',
-      price: 500,
-      store_id: 1,
-    },
-      {
-        id: 2,
-        name: 'bicicleta',
-        price: 1500,
-        store_id: 1,
-      });
-  }
-
+  // CREATE ITEM
   async createItem(data) {
-    const newItem = {
-      id: this.items.length + 1,
-      ...data
+    // validar si el store_id existe en la tabla store
+    const queryStore = `SELECT * FROM store WHERE id = '${data.store_id}'`;
+    const rtaStore = await this.pool.query(queryStore);
+    if (rtaStore.rows.length === 0) {
+      throw boom.notFound('store not found');
+    } else {
+      const query = `INSERT INTO items (name, price, store_id) VALUES ('${data.name}', ${data.price}, '${data.store_id}') RETURNING *`;
+      const rta = await this.pool.query(query);
+      return rta.rows;
     }
-    this.items.push(newItem);
-    return newItem;
   }
 
   //find
   async findItems() {
-    return this.items;
+    const query = 'SELECT * FROM items';
+    const rta = await this.pool.query(query);
+    return rta.rows;
   }
 
   //findone
   async findoneItem(id) {
-    const item = this.items.find(item => item.id === parseInt(id))
-    if (!item) {
-      throw boom.notFound('item not found');
+    // validar si el store_id existe en la tabla store
+    const queryStore = `SELECT * FROM items WHERE id = '${id}'`;
+    const rtaStore = await this.pool.query(queryStore);
+    if (rtaStore.rows.length === 0) {
+      throw boom.notFound('store not found');
     }
-    return item;
+    return rtaStore.rows;
   }
-  // update item
+  // update items
   async updateItem(id, changes) {
-    const index = this.items.findIndex(item => item.id === parseInt(id));
-    if (index === -1) {
-      throw boom.notFound('item not found');
-    }
-    this.items[index] = {
-      ...this.items[index],
-      ...changes
-    }
-    return this.items[index];
+    // validar si el store_id existe en la tabla store
+    const query = `UPDATE items SET name = '${changes.name}', price = '${changes.price}'   WHERE id = '${id}' RETURNING *`;
+    const rta = await this.pool.query(query);
+    return rta.rows;
   }
 
   // delete item
-  async deleteItem() {
-    const index = this.items.findIndex(item => item.id === parseInt(id));
-    if (index === -1) {
-      throw boom.notFound('item not found');
+  async deleteItem(id) {
+    const query = `DELETE FROM items WHERE id = '${id}'`;
+    const rta = await this.pool.query(query);
+    if (rta.rowCount !== 0) {
+      throw boom.notFound('delete successfully');
     }
-    this.items.splice(index, 1);
-    return { id };
+    return rta.rowCount;
   }
 }
 

@@ -7,8 +7,8 @@ const storeServices = new StoresServices();
 router.get('/', async (req, res) => {
   try {
     const stores = await storeServices.findStore();
+    console.log("stores", stores);
     res.json(stores)
-
   } catch (error) {
     res.status(404).json({
       message: error.message
@@ -38,7 +38,6 @@ router.post('/:name', async (req, res) => {
     })
 
   }
-
 })
 
 // update store
@@ -57,6 +56,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const id = req.params.id
     const store = await storeServices.deleteStore(id)
+    console.log("storen delete", store);
     res.json(store)
   } catch (error) {
     res.status(404).json({

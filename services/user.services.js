@@ -1,6 +1,7 @@
 const boom = require('@hapi/boom');
+const bcrypt = require("bcryptjs");
 
-const getConnetion = require('../libs/postgres.js');
+//const getConnetion = require('../libs/postgres.js');
 const pool = require('../libs/postgresPool.js');
 
 
@@ -8,33 +9,22 @@ class UsersService {
 
   constructor() {
     this.Users = [];
-    this.generate();
+
     this.pool = pool;
     this.pool.on('error', (err) => {
       console.error(err);
     });
 
   }
-  generate() {
-    this.Users.push({
-      id: 1,
-      username: 'Juan',
-      password: '1234',
-    }, {
-      id: 2,
-      username: 'camilo',
-      password: '1234',
-    })
 
-  }
+  // CREATE USER
   async createUser(data) {
     // Implementación de la creación de un usuario
-    const newUser = {
-      id: this.Users.length + 1,
-      ...data
-    }
-    this.Users.push(newUser);
-    return newUser;
+    const hash = await bcrypt.hash(data.password, 10);
+    const query = `INSERT INTO users (username, password) VALUES ('${data.username}', '${hash}') RETURNING *`;
+    const rta = await this.pool.query(query);
+    console.log("rta", rta.rows);
+    return rta.rows[0];
   }
   // find
   async findUsers() {
@@ -48,37 +38,27 @@ class UsersService {
   // findone
   async findoneUser(id) {
     // Implementación de la búsqueda de un usuario por ID
-    const user = this.Users.find(item => item.id === parseInt(id));
-    if (!user) {
-      throw boom.notFound('User not found');
-    }
-    return user;
+    const query = `SELECT * FROM users WHERE id = ${id}`;
+    const rta = await this.pool.query(query);
+    return rta.rows;
   }
   async updateUser(id, changes) {
     // Implementación de la actualización de un usuario
-    const index = this.Users.findIndex(item => item.id === parseInt(id));
-    if (index === -1) {
-      throw boom.notFound('Users not found');
-    }
-    const user = this.Users[index];
-    this.Users[index] = {
-      ...user,
-      ...changes
-    }
-    return this.Users[index];
+    const query = `UPDATE users SET username = '${changes.username}' WHERE id = ${id} RETURNING *`;
+    const rta = await this.pool.query(query);
+    return rta.rows;
+
   }
 
   // delete user
   async deleteUser(id) {
     // Implementación de la eliminación de un usuario
-    console.log("id", id);
-    const index = this.Users.findIndex(item => item.id === parseInt(id));
-    if (index === -1) {
-      throw boom.notFound('Users not found');
+    const query = `DELETE FROM users WHERE id = ${id}`;
+    const rta = await this.pool.query(query);
+    if (rta.rowCount !== 0) {
+      throw boom.notFound('delete successfully');
     }
-    const user = this.Users[index];
-    this.Users.splice(index, 1);
-    return { id };
+    return rta.rowCount;
   }
 
 }
