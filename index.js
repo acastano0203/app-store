@@ -19,7 +19,11 @@ const options = {
     }
   },
 };*/
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // o '*', solo para pruebas
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 
 
 
