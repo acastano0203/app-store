@@ -20,6 +20,10 @@
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
+    "cors": "^2.8.5",
     "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -1,5 +1,6 @@
 const express = require('express');
 const { boomErrorHandler } = require('./middleware/error.handler.js');
+const cors = require('cors');
 
 const routerApi = require('./routers');
 
@@ -7,6 +8,8 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+app.use(cors());
 
 
 
