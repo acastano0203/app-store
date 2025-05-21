@@ -20,9 +20,7 @@ async function loginUser(username, password, id) {
     throw new Error("Credenciales inválidas");
   }
   const match = await bcrypt.compare(password.trim(), user.password.trim());
-  if (match) {
-    throw new Error("Credenciales validas");
-  }
+
 
 
   const access_token = generateToken(user);
