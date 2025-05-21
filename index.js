@@ -27,7 +27,7 @@ routerApi(app);
 app.use(boomErrorHandler);
 
 app.get('/', (req, res) => {
-  res.send('¡Hola mundo desde Heroku local!');
+  res.send('¡Run server!');
 });
 
 app.listen(port, () => {
