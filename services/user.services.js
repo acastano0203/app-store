@@ -1,10 +1,18 @@
 const boom = require('@hapi/boom');
 
+const getConnetion = require('../libs/postgres.js');
+const pool = require('../libs/postgresPool.js');
+
+
 class UsersService {
 
   constructor() {
     this.Users = [];
     this.generate();
+    this.pool = pool;
+    this.pool.on('error', (err) => {
+      console.error(err);
+    });
 
   }
   generate() {
@@ -31,7 +39,11 @@ class UsersService {
   // find
   async findUsers() {
     // Implementación de la búsqueda de usuarios
-    return this.Users;
+    //const client = await getConnetion();
+    const query = 'SELECT * FROM users';
+    const rta = await this.pool.query(query);
+    //const rta = await client.query('SELECT * FROM users');
+    return rta.rows;
   }
   // findone
   async findoneUser(id) {
