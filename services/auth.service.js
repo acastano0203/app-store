@@ -1,7 +1,6 @@
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-
 require('dotenv').config();
 
 const API_URL = "https://dry-garden-45582-af263137215f.herokuapp.com/users";
@@ -12,6 +11,7 @@ function generateToken(user) {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
+
 }
 
 async function loginUser(username, password, id) {
