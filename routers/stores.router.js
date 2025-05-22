@@ -7,7 +7,6 @@ const storeServices = new StoresServices();
 router.get('/', async (req, res) => {
   try {
     const stores = await storeServices.findStore();
-    console.log("stores", stores);
     res.json(stores)
   } catch (error) {
     res.status(404).json({

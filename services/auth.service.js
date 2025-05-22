@@ -7,7 +7,7 @@ const API_URL = "https://dry-garden-45582-af263137215f.herokuapp.com/users";
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, username: user.username },
+    { password: user.password, username: user.username },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
