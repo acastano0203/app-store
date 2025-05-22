@@ -34,12 +34,12 @@ class ItemsServices {
   //findone
   async findoneItem(id) {
     // validar si el store_id existe en la tabla store
-    const queryStore = `SELECT * FROM items WHERE id = '${id}'`;
-    const rtaStore = await this.pool.query(queryStore);
+    const query = `SELECT * FROM items WHERE id = '${id}'`;
+    const rta = await this.pool.query(query);
     if (rtaStore.rows.length === 0) {
       throw boom.notFound('store not found');
     }
-    return rtaStore.rows;
+    return rta.rows;
   }
   // update items
   async updateItem(id, changes) {
