@@ -21,6 +21,24 @@ async function getUserId(username) {
   return rta.rows[0].id;
 }
 
+
+function cleanString(input) {
+  if (typeof input !== 'string') return '';
+
+  // 1. Elimina espacios al inicio y final (sin usar trim)
+  input = input.replace(/^\s+|\s+$/g, '');
+
+  // 2. Reemplaza múltiples espacios por uno solo
+  input = input.replace(/\s+/g, ' ');
+
+  // 3. Elimina saltos de línea y tabulaciones
+  input = input.replace(/[\n\r\t]/g, '');
+
+  return input;
+}
+
+
+
 async function loginUser(username, password) {
   // Consultar usuario por email desde la API externa
   const userid = await getUserId(username);
@@ -29,7 +47,16 @@ async function loginUser(username, password) {
   if (!user) {
     throw new Error("Credenciales inválidas");
   }
+
+  // Limpiar y validar el password
+
+  cleanString(password)
+  cleanString(user.password)
+
   const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw new Error("Credenciales inválidas");
+  }
   const access_token = generateToken(user);
   return { access_token };
 }
